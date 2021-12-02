@@ -1,9 +1,11 @@
 from io import StringIO
 from contextlib import redirect_stdout
-import day_01
+from day_01 import main as main_01
+from day_02 import main as main_02
 
 expected_outputs = (
     '1752 measurements are larger than the previous measurement\n1781 sums that are larger than the previous sum\n',
+    'Submarine position (no aim): 1893605\nSubmarine position (with aim): 2120734350\n',
 )
 
 
@@ -11,8 +13,7 @@ def testDay(day_number, expected):
     day_string = 'DAY {:0>2}:'.format(day_number)
     f = StringIO()
     with redirect_stdout(f):
-        call = 'day_{:0>2}.main()'.format(day_number)
-        eval(call)
+        eval('main_{:0>2}()'.format(day_number))
 
     if f.getvalue() != expected:
         print(f'{day_string} FAILED!')

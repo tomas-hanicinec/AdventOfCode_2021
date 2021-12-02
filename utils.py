@@ -1,6 +1,8 @@
-def readIntegers(filename):
-    result = []
+def readStrings(filename):
     with open(filename, 'r') as file:
-        for line in file.readlines():
-            result.append(int(line))
-    return result
+        return [line.strip('\n') for line in file]
+
+
+def readIntegers(filename):
+    with open(filename, 'r') as file:
+        return [int(line) for line in file]
