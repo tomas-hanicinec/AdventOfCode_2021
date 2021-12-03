@@ -39,7 +39,7 @@ class Submarine:
 
 
 def main():
-    commands = utils.readStrings('inputs/day_02.txt')
+    commands = utils.read_strings('inputs/day_02.txt')
 
     submarine1 = Submarine(0, 0, 0, 1)
     submarine2 = Submarine(0, 0, 0, 2)
