@@ -1,6 +1,20 @@
 import utils
 
 
+def main():
+    commands = utils.read_strings('inputs/day_02.txt')
+
+    submarine1 = Submarine(0, 0, 0, 1)
+    submarine2 = Submarine(0, 0, 0, 2)
+    for command in commands:
+        parts = str(command).split(' ')
+        submarine1.move(parts[0], int(parts[1]))
+        submarine2.move(parts[0], int(parts[1]))
+
+    print(f'Submarine position (no aim): {submarine1.position() * submarine1.depth()}')
+    print(f'Submarine position (with aim): {submarine2.position() * submarine2.depth()}')
+
+
 class Submarine:
     __instruction_map = {
         'forward': [
@@ -36,20 +50,6 @@ class Submarine:
 
     def depth(self):
         return self.__depth
-
-
-def main():
-    commands = utils.read_strings('inputs/day_02.txt')
-
-    submarine1 = Submarine(0, 0, 0, 1)
-    submarine2 = Submarine(0, 0, 0, 2)
-    for command in commands:
-        parts = str(command).split(' ')
-        submarine1.move(parts[0], int(parts[1]))
-        submarine2.move(parts[0], int(parts[1]))
-
-    print(f'Submarine position (no aim): {submarine1.position() * submarine1.depth()}')
-    print(f'Submarine position (with aim): {submarine2.position() * submarine2.depth()}')
 
 
 if __name__ == '__main__':

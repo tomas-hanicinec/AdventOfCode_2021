@@ -1,27 +1,6 @@
 import utils
 
 
-def get_most_common_bit(number_strings, position):
-    bit_sum = 0
-    for number_string in number_strings:
-        bit_sum += int(number_string[position])
-
-    remainder = len(number_strings) - bit_sum
-    return 0 if bit_sum < remainder else 1
-
-
-def filter_by_criteria(number_strings, filter_factory):
-    remaining = number_strings
-    i = 0
-    while len(remaining) != 1:
-        most_common = get_most_common_bit(remaining, i)
-        itr = filter(filter_factory(i, most_common), remaining)
-        remaining = list(itr)
-        i += 1
-
-    return int(remaining[0], 2)
-
-
 def main():
     number_strings = utils.read_strings('inputs/day_03.txt')
 
@@ -43,6 +22,27 @@ def main():
     )
 
     print(f'Submarine life support rating: {o2_generator_rating * co2_scrubber_rating}')
+
+
+def get_most_common_bit(number_strings, position):
+    bit_sum = 0
+    for number_string in number_strings:
+        bit_sum += int(number_string[position])
+
+    remainder = len(number_strings) - bit_sum
+    return 0 if bit_sum < remainder else 1
+
+
+def filter_by_criteria(number_strings, filter_factory):
+    remaining = number_strings
+    i = 0
+    while len(remaining) != 1:
+        most_common = get_most_common_bit(remaining, i)
+        itr = filter(filter_factory(i, most_common), remaining)
+        remaining = list(itr)
+        i += 1
+
+    return int(remaining[0], 2)
 
 
 if __name__ == '__main__':

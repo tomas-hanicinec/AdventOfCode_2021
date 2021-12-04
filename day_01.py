@@ -1,7 +1,13 @@
 import utils
 
 
-def countIncreases(depths, window_size):
+def main():
+    depths = utils.read_integers('inputs/day_01.txt')
+    print(f'{count_increases(depths, 1)} measurements are larger than the previous measurement')
+    print(f'{count_increases(depths, 3)} sums that are larger than the previous sum')
+
+
+def count_increases(depths, window_size):
     # calculate the first window sum
     previous_sum = 0
     for depth in depths[0:window_size]:
@@ -19,12 +25,6 @@ def countIncreases(depths, window_size):
         index += 1
 
     return result
-
-
-def main():
-    depths = utils.read_integers('inputs/day_01.txt')
-    print(f'{countIncreases(depths, 1)} measurements are larger than the previous measurement')
-    print(f'{countIncreases(depths, 3)} sums that are larger than the previous sum')
 
 
 if __name__ == '__main__':
