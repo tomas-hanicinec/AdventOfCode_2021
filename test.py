@@ -7,6 +7,7 @@ from day_04 import main as main_04
 from day_05 import main as main_05
 from day_06 import main as main_06
 from day_07 import main as main_07
+from day_08 import main as main_08
 
 expected_outputs = (
     '1752 measurements are larger than the previous measurement\n1781 sums that are larger than the previous sum\n',
@@ -15,7 +16,8 @@ expected_outputs = (
     'First winning board score: 74320\nLast winning board score: 17884\n',
     'Overlapping points (straight lines only): 5774\nOverlapping points total: 18423\n',
     'Total number of lantern-fish after 80 days: 352872\nTotal number of lantern-fish after 256 days: 1604361182149\n',
-    'Best position with linear burn: 307, fuel spent: 340056\nBest position with distance-increased burn: 460, fuel spent: 96592275\n'
+    'Best position with linear burn: 307, fuel spent: 340056\nBest position with distance-increased burn: 460, fuel spent: 96592275\n',
+    'Digits {8, 1, 4, 7} appear 367 times in the output\nSum of all the output values: 974512\n'
 )
 
 
