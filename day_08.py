@@ -3,7 +3,7 @@ from typing import List, Dict
 import utils
 
 SYMBOL_PATTERNS = ('ABCEFG', 'CF', 'ACDEG', 'ACDFG', 'BCDF', 'ABDFG', 'ABDEFG', 'ACF', 'ABCDEFG', 'ABCDFG')
-LETTERS = ('C', 'F', 'A', 'B', 'D', 'E', 'G')  # orders from the shortest patterns, a bit more effective
+LETTERS = ('C', 'F', 'A', 'B', 'D', 'E', 'G')  # ordered from the shortest patterns, a bit more effective
 
 
 def main() -> None:

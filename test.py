@@ -37,7 +37,6 @@ expected_outputs = (
 
 
 def testDay(day_number: int, expected: str) -> None:
-    # main_01()
     day_string = 'DAY {:0>2}:'.format(day_number)
     f = StringIO()
     with redirect_stdout(f):
