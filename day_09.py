@@ -1,7 +1,9 @@
+from typing import Tuple, List, Set
+
 import utils
 
 
-def main():
+def main() -> None:
     lines = utils.read_strings('inputs/day_09.txt')
     floor_map = FloorMap(lines)
 
@@ -21,7 +23,11 @@ def main():
 
 
 class FloorMap:
-    def __init__(self, lines):
+    __m: List[List[int]]
+    __rows: int
+    __columns: int
+
+    def __init__(self, lines: List[str]) -> None:
         self.__m = []
         for line in lines:
             self.__m.append([int(i) for i in line])
@@ -29,11 +35,11 @@ class FloorMap:
         self.__rows = len(self.__m)
         self.__columns = len(self.__m[0])
 
-    def get_height(self, point):
+    def get_height(self, point: Tuple[int, int]) -> int:
         return self.__m[point[0]][point[1]]
 
-    def get_low_points(self):
-        low_points = set()
+    def get_low_points(self) -> Set[Tuple[int, int]]:
+        low_points: Set[Tuple[int, int]] = set()
         for i in range(self.__rows):
             for j in range(self.__columns):
                 point = (i, j)
@@ -41,13 +47,13 @@ class FloorMap:
                     low_points.add(point)
         return low_points
 
-    def is_low_point(self, point):
+    def is_low_point(self, point: Tuple[int, int]) -> bool:
         for neighbour in self.get_neighbours(point):
             if self.get_height(neighbour) <= self.get_height(point):
                 return False
         return True
 
-    def get_neighbours(self, point):
+    def get_neighbours(self, point: Tuple[int, int]) -> List[Tuple[int, int]]:
         neighbours = []
         for offset in ((0, 1), (0, -1), (1, 0), (-1, 0)):
             neighbour = (point[0] + offset[0], point[1] + offset[1])
@@ -55,7 +61,7 @@ class FloorMap:
                 neighbours.append(neighbour)
         return neighbours
 
-    def get_basin_size(self, point):
+    def get_basin_size(self, point: Tuple[int, int]) -> int:
         to_process = [point]
         basin = set()
         while len(to_process) > 0:

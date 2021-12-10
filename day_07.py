@@ -1,10 +1,10 @@
-import sys
+from itertools import groupby
+from typing import List, Dict, Tuple, Callable
 
 import utils
-from itertools import groupby
 
 
-def main():
+def main() -> None:
     input_line = utils.read_strings('inputs/day_07.txt')[0]
     positions = [int(n) for n in input_line.split(',')]
 
@@ -15,17 +15,17 @@ def main():
     print(f'Best position with distance-increased burn: {position}, fuel spent: {fuel_consumption}')
 
 
-def get_best_position(positions, fuel_consumption_function):
+def get_best_position(positions: List[int], fuel_consumption_function: Callable[[int], int]) -> Tuple[int, int]:
     # preprocess data
     max_position = max(positions)
     best_position = -1
     best_fuel = fuel_consumption_function(max_position) * len(positions)  # can't be possibly bigger than this
-    counts = {}
+    counts: Dict[int, int] = {}
     for i, items in groupby(sorted(positions)):
         counts[i] = sum(1 for _ in items)
 
     # try each possible position
-    cache = {}
+    cache: Dict[int, int] = {}
     for i in range(max_position + 1):
         fuel = 0
         for j in counts:
@@ -43,12 +43,12 @@ def get_best_position(positions, fuel_consumption_function):
     return best_position, int(best_fuel)
 
 
-def linear_burn(distance):
+def linear_burn(distance: int) -> int:
     return distance
 
 
-def increased_burn(distance):
-    return (distance * (distance + 1)) / 2
+def increased_burn(distance: int) -> int:
+    return int((distance * (distance + 1)) / 2)
 
 
 if __name__ == '__main__':

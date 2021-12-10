@@ -1,10 +1,12 @@
+from typing import List, Dict
+
 import utils
 
 SYMBOL_PATTERNS = ('ABCEFG', 'CF', 'ACDEG', 'ACDFG', 'BCDF', 'ABDFG', 'ABDEFG', 'ACF', 'ABCDEFG', 'ABCDFG')
 LETTERS = ('C', 'F', 'A', 'B', 'D', 'E', 'G')  # orders from the shortest patterns, a bit more effective
 
 
-def main():
+def main() -> None:
     lines = utils.read_strings('inputs/day_08.txt')
 
     unique_digits = {1, 4, 7, 8}
@@ -26,7 +28,10 @@ def main():
 
 
 class Decoder:
-    def __init__(self, patterns):
+    patterns: List[str]
+    letters: List[str]
+
+    def __init__(self, patterns: List[str]) -> None:
         # sort patterns according to their length (shorter patterns will match faster)
         self.patterns = patterns
         self.patterns.sort(key=lambda s: len(s))
@@ -34,9 +39,9 @@ class Decoder:
         # sort letters so that first are the letters from the shortest patterns (wrong mappings are identified much sooner that way)
         self.letters = self.sort_letters()
 
-    def sort_letters(self):
+    def sort_letters(self) -> List[str]:
         remaining_letters = set(LETTERS)
-        sorted_letters = []
+        sorted_letters: List[str] = []
         for pattern in self.patterns:
             for letter in pattern:
                 if letter.upper() in remaining_letters:
@@ -44,8 +49,9 @@ class Decoder:
                     remaining_letters.remove(letter.upper())
                     if len(remaining_letters) == 0:
                         return sorted_letters  # all letters placed
+        return sorted_letters  # all patterns processed
 
-    def decode(self, symbols_encoded):
+    def decode(self, symbols_encoded: List[str]) -> List[int]:
         mapping = self.find_mapping(0, self.patterns)
 
         result = [0] * len(symbols_encoded)
@@ -59,7 +65,7 @@ class Decoder:
 
     # all pattern (original) letters are lowercase (self.letters, self.patterns)
     # all symbol (replacement) letters are uppercase (LETTERS, SYMBOL_PATTERNS)
-    def find_mapping(self, depth, patterns):
+    def find_mapping(self, depth: int, patterns: List[str]) -> Dict[str, str]:
         letter = self.letters[depth]  # choose the current letter according to the internal letter ordering
         for new_letter in LETTERS:
             # replace letter with new_letter in patterns and try to match against the symbols
@@ -82,7 +88,7 @@ class Decoder:
         return {}  # tried all substitutes, none is possible -> fail and go up
 
 
-def match_symbols(patterns):
+def match_symbols(patterns: List[str]) -> bool:
     for pattern in patterns:
         sorted_pattern = ''.join(sorted(pattern))
         if sorted_pattern not in SYMBOL_PATTERNS:

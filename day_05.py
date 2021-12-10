@@ -1,8 +1,10 @@
+from typing import List, Dict, NamedTuple
+
 import utils
 
 
-def main():
-    count_map = dict()
+def main() -> None:
+    count_map: Dict[Point, List[int]] = dict()
     for input_line in utils.read_strings('inputs/day_05.txt'):
         vent_line = VentLine(input_line)
         for point in vent_line.get_points():
@@ -23,36 +25,44 @@ def main():
     print(f'Overlapping points total: {counter_all}')
 
 
+class Point(NamedTuple):
+    x: int
+    y: int
+
+
 class VentLine:
-    def __init__(self, line):
-        points = line.split(' -> ')
-        self.__a = tuple(int(x) for x in points[0].split(','))
-        self.__b = tuple(int(x) for x in points[1].split(','))
-        self.is_diagonal = self.__a[0] != self.__b[0] and self.__a[1] != self.__b[1]
+    a: Point
+    b: Point
+    is_diagonal: bool
 
-    def get_points(self):
-        x_step = self.__get_step(self.__a[0], self.__b[0])
-        y_step = self.__get_step(self.__a[1], self.__b[1])
-        top_left_corner = (min(self.__a[0], self.__b[0]), min(self.__a[1], self.__b[1]))
-        bottom_right_corner = (max(self.__a[0], self.__b[0]), max(self.__a[1], self.__b[1]))
+    def __init__(self, line_definition: str):
+        points = line_definition.split(' -> ')
+        p = points[0].split(',')
+        self.a = Point(int(p[0]), int(p[1]))
+        p = points[1].split(',')
+        self.b = Point(int(p[0]), int(p[1]))
+        self.is_diagonal = self.a.x != self.b.x and self.a.y != self.b.y
 
-        result = []
-        point = self.__a
-        while self.__is_in_box(point, top_left_corner, bottom_right_corner):
+    def get_points(self) -> List[Point]:
+        x_step = self.__get_step(self.a.x, self.b.x)
+        y_step = self.__get_step(self.a.y, self.b.y)
+        tl_corner = Point(min(self.a.x, self.b.x), min(self.a.y, self.b.y))
+        br_corner = Point(max(self.a.x, self.b.x), max(self.a.y, self.b.y))
+
+        result: List[Point] = []
+        point = self.a
+        while br_corner.x >= point.x >= tl_corner.x and br_corner.y >= point.y >= tl_corner.y:
+            # while the point is within the vent line, move one point forward
             result.append(point)
-            point = (point[0] + x_step, point[1] + y_step)
+            point = Point(point.x + x_step, point.y + y_step)
 
         return result
 
     @staticmethod
-    def __get_step(x1, x2):
+    def __get_step(x1: int, x2: int) -> int:
         if x1 == x2:
             return 0
         return 1 if x1 < x2 else -1
-
-    @staticmethod
-    def __is_in_box(p, tl, br):
-        return br[0] >= p[0] >= tl[0] and br[1] >= p[1] >= tl[1]
 
 
 if __name__ == '__main__':

@@ -1,7 +1,9 @@
+from typing import List, Dict, Callable, Tuple
+
 import utils
 
 
-def main():
+def main() -> None:
     commands = utils.read_strings('inputs/day_02.txt')
 
     submarine1 = Submarine(0, 0, 0, 1)
@@ -16,28 +18,32 @@ def main():
 
 
 class Submarine:
-    __instruction_map = {
+    __instruction_map: Dict[str, List[Callable[[int, int], Tuple[int, int, int]]]] = {
         'forward': [
-            lambda val, _: [val, 0, 0],
-            lambda val, aim: [val, aim * val, 0]
+            lambda val, _: (val, 0, 0),
+            lambda val, aim: (val, aim * val, 0)
         ],
         'up': [
-            lambda val, _: [0, -val, 0],
-            lambda val, aim: [0, 0, -val]
+            lambda val, _: (0, -val, 0),
+            lambda val, aim: (0, 0, -val)
         ],
         'down': [
-            lambda val, _: [0, val, 0],
-            lambda val, aim: [0, 0, val]
+            lambda val, _: (0, val, 0),
+            lambda val, aim: (0, 0, val)
         ]
     }
+    __position: int
+    __depth: int
+    __aim: int
+    __version: int
 
-    def __init__(self, position, depth, aim, version):
-        self.__position = int(position)
-        self.__depth = int(depth)
-        self.__aim = int(aim)
-        self.__version = int(version)
+    def __init__(self, position: int, depth: int, aim: int, version: int) -> None:
+        self.__position = position
+        self.__depth = depth
+        self.__aim = aim
+        self.__version = version
 
-    def move(self, command, value):
+    def move(self, command: str, value: int) -> None:
         command_instructions = self.__instruction_map[command]
         instruction = command_instructions[self.__version - 1]
         d_pos, d_depth, d_aim = instruction(value, self.__aim)
@@ -45,10 +51,10 @@ class Submarine:
         self.__depth += d_depth
         self.__aim += d_aim
 
-    def position(self):
+    def position(self) -> int:
         return self.__position
 
-    def depth(self):
+    def depth(self) -> int:
         return self.__depth
 
 

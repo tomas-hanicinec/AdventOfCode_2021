@@ -1,14 +1,25 @@
-from io import StringIO
 from contextlib import redirect_stdout
+from io import StringIO
+
+# noinspection PyUnresolvedReferences
 from day_01 import main as main_01
+# noinspection PyUnresolvedReferences
 from day_02 import main as main_02
+# noinspection PyUnresolvedReferences
 from day_03 import main as main_03
+# noinspection PyUnresolvedReferences
 from day_04 import main as main_04
+# noinspection PyUnresolvedReferences
 from day_05 import main as main_05
+# noinspection PyUnresolvedReferences
 from day_06 import main as main_06
+# noinspection PyUnresolvedReferences
 from day_07 import main as main_07
+# noinspection PyUnresolvedReferences
 from day_08 import main as main_08
+# noinspection PyUnresolvedReferences
 from day_09 import main as main_09
+# noinspection PyUnresolvedReferences
 from day_10 import main as main_10
 
 expected_outputs = (
@@ -25,7 +36,8 @@ expected_outputs = (
 )
 
 
-def testDay(day_number, expected):
+def testDay(day_number: int, expected: str) -> None:
+    # main_01()
     day_string = 'DAY {:0>2}:'.format(day_number)
     f = StringIO()
     with redirect_stdout(f):
@@ -38,7 +50,7 @@ def testDay(day_number, expected):
         print(f'{day_string} OK')
 
 
-def main():
+def main() -> None:
     for index, expected in enumerate(expected_outputs):
         testDay(index + 1, expected)
 

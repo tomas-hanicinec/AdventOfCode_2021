@@ -1,15 +1,16 @@
+from typing import List
+
 import utils
 
 BOARD_SIZE = 5
 
 
-def main():
-    # lines = utils.read_strings('inputs/t.txt')
+def main() -> None:
     lines = utils.read_strings('inputs/day_04.txt')
     draw = map(int, lines[0].split(','))
 
     i = 2  # skip the first blank line
-    boards = []
+    boards: List[Board] = []
     while i < len(lines):
         boards.append(Board(lines[i:(i + BOARD_SIZE)]))
         i += BOARD_SIZE + 1  # skip the blank line before the next board
@@ -30,10 +31,15 @@ def main():
 
 
 class Board:
-    bingo = False
-    score = 0
+    bingo: bool
+    score: int
+    __row_sums: List[int]
+    __col_sums: List[int]
+    __board: List[List[int]]
 
-    def __init__(self, board_lines):
+    def __init__(self, board_lines: List[str]) -> None:
+        self.bingo = False
+        self.score = 0
         self.__row_sums = [0] * BOARD_SIZE
         self.__col_sums = [0] * BOARD_SIZE
         self.__board = []
@@ -43,7 +49,7 @@ class Board:
                 self.score += int(val)
                 self.__board[i].append(int(val))
 
-    def check(self, number):
+    def check(self, number: int) -> None:
         for i in range(BOARD_SIZE):
             for j in range(BOARD_SIZE):
                 if self.__board[i][j] == number:

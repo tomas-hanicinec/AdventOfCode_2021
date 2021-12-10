@@ -1,18 +1,20 @@
+from typing import Dict
+
 import utils
 
 SPAWNING_PERIOD = 7
 NEWBORN_SPAWNING_DELAY = 2
-offspring_count_cache = {}
+offspring_count_cache: Dict[int, int] = {}
 
 
-def main():
+def main() -> None:
     input_line = utils.read_strings('inputs/day_06.txt')[0]
 
     counter = [0] * SPAWNING_PERIOD
     for fish_timer in input_line.split(','):
         counter[int(fish_timer)] += 1
 
-    def count_fish_after(days):
+    def count_fish_after(days: int) -> int:
         result = 0
         for timer, count in enumerate(counter):
             result += count * (1 + count_offspring(days - timer))
@@ -23,7 +25,7 @@ def main():
 
 
 # how many offspring is produced by one fish with timer at 0 in days_remaining days (the initial fish excluded)
-def count_offspring(days_remaining):
+def count_offspring(days_remaining: int) -> int:
     if days_remaining < 1:
         return 0  # no new offspring possible
 

@@ -1,7 +1,9 @@
+from typing import List, Callable
+
 import utils
 
 
-def main():
+def main() -> None:
     number_strings = utils.read_strings('inputs/day_03.txt')
 
     gamma_rate = epsilon_rate = 0
@@ -24,7 +26,7 @@ def main():
     print(f'Submarine life support rating: {o2_generator_rating * co2_scrubber_rating}')
 
 
-def get_most_common_bit(number_strings, position):
+def get_most_common_bit(number_strings: List[str], position: int) -> int:
     bit_sum = 0
     for number_string in number_strings:
         bit_sum += int(number_string[position])
@@ -33,12 +35,13 @@ def get_most_common_bit(number_strings, position):
     return 0 if bit_sum < remainder else 1
 
 
-def filter_by_criteria(number_strings, filter_factory):
+def filter_by_criteria(number_strings: List[str], filter_factory: Callable[[int, int], Callable[[str], int]]) -> int:
     remaining = number_strings
     i = 0
     while len(remaining) != 1:
         most_common = get_most_common_bit(remaining, i)
-        itr = filter(filter_factory(i, most_common), remaining)
+        filter_function = filter_factory(i, most_common)
+        itr = filter(filter_function, remaining)
         remaining = list(itr)
         i += 1
 

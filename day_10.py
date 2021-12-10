@@ -1,8 +1,9 @@
+from typing import NamedTuple, Dict, Tuple
+
 import utils
-from typing import NamedTuple
 
 
-def main():
+def main() -> None:
     lines = utils.read_strings('inputs/day_10.txt')
     symbol_map = get_symbol_map()
 
@@ -26,7 +27,7 @@ class Symbol(NamedTuple):
     autocomplete_value: int
 
 
-def get_symbol_map():
+def get_symbol_map() -> Dict[str, Symbol]:
     symbols = (
         Symbol('(', ')', 3, 1),
         Symbol('[', ']', 57, 2),
@@ -40,7 +41,7 @@ def get_symbol_map():
     return symbol_map
 
 
-def get_scores(line, symbols):
+def get_scores(line: str, symbols: Dict[str, Symbol]) -> Tuple[int, int]:
     stack = [line[0]]
     for i in range(1, len(line)):
         if symbols[line[i]].opening == line[i]:
