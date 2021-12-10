@@ -9,6 +9,7 @@ from day_06 import main as main_06
 from day_07 import main as main_07
 from day_08 import main as main_08
 from day_09 import main as main_09
+from day_10 import main as main_10
 
 expected_outputs = (
     '1752 measurements are larger than the previous measurement\n1781 sums that are larger than the previous sum\n',
@@ -20,6 +21,7 @@ expected_outputs = (
     'Best position with linear burn: 307, fuel spent: 340056\nBest position with distance-increased burn: 460, fuel spent: 96592275\n',
     'Digits {8, 1, 4, 7} appear 367 times in the output\nSum of all the output values: 974512\n',
     'Sum of the low point risk level: 607\nSizes of three largest basins multiplied: 900864\n',
+    'Total error score: 278475\nMiddle autocomplete score: 3015539998\n',
 )
 
 
