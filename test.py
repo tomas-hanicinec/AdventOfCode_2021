@@ -21,6 +21,10 @@ from day_08 import main as main_08
 from day_09 import main as main_09
 # noinspection PyUnresolvedReferences
 from day_10 import main as main_10
+# noinspection PyUnresolvedReferences
+from day_11 import main as main_11
+# noinspection PyUnresolvedReferences
+from day_12 import main as main_12
 
 expected_outputs = (
     '1752 measurements are larger than the previous measurement\n1781 sums that are larger than the previous sum\n',
@@ -33,25 +37,28 @@ expected_outputs = (
     'Digits {8, 1, 4, 7} appear 367 times in the output\nSum of all the output values: 974512\n',
     'Sum of the low point risk level: 607\nSizes of three largest basins multiplied: 900864\n',
     'Total error score: 278475\nMiddle autocomplete score: 3015539998\n',
+    'Number of flashes after 100 steps: 1667\nNumber of steps before all octopuses flash: 488\n',
+    'Path count without revisiting small caves: 3495\nPath count visiting single small cave twice: 94849\n',
 )
 
 
-def testDay(day_number: int, expected: str) -> None:
-    day_string = 'DAY {:0>2}:'.format(day_number)
+def test_day(day_number: int, expected: str) -> None:
     f = StringIO()
     with redirect_stdout(f):
         eval('main_{:0>2}()'.format(day_number))
+    got = f.getvalue()
+    f.close()
 
-    if f.getvalue() != expected:
-        print(f'{day_string} FAILED!')
-        print(f'Expected:\n{expected}Got:\n{f.getvalue()}')
+    if got != expected:
+        print('DAY {:0>2}: FAILED!'.format(day_number))
+        print('Expected:\n{}Got:\n{}'.format(expected, got))
     else:
-        print(f'{day_string} OK')
+        print('DAY {:0>2}: OK'.format(day_number))
 
 
 def main() -> None:
     for index, expected in enumerate(expected_outputs):
-        testDay(index + 1, expected)
+        test_day(index + 1, expected)
 
 
 if __name__ == '__main__':
