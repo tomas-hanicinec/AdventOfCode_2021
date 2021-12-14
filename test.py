@@ -27,6 +27,8 @@ from day_11 import main as main_11
 from day_12 import main as main_12
 # noinspection PyUnresolvedReferences
 from day_13 import main as main_13
+# noinspection PyUnresolvedReferences
+from day_14 import main as main_14
 
 expected_outputs = (
     '1752 measurements are larger than the previous measurement\n1781 sums that are larger than the previous sum\n',
@@ -42,6 +44,7 @@ expected_outputs = (
     'Number of flashes after 100 steps: 1667\nNumber of steps before all octopuses flash: 488\n',
     'Path count without revisiting small caves: 3495\nPath count visiting single small cave twice: 94849\n',
     '724 dots visible after the first fold\n ##  ###    ## ###  #### ###  #  # #   \n#  # #  #    # #  # #    #  # #  # #   \n#    #  #    # ###  ###  #  # #  # #   \n#    ###     # #  # #    ###  #  # #   \n#  # #    #  # #  # #    # #  #  # #   \n ##  #     ##  ###  #### #  #  ##  ####\n',
+    'Result after 10 steps: 2768\nResult after 40 steps: 2914365137499\n',
 )
 
 
