@@ -29,6 +29,12 @@ from day_12 import main as main_12
 from day_13 import main as main_13
 # noinspection PyUnresolvedReferences
 from day_14 import main as main_14
+# noinspection PyUnresolvedReferences
+from day_15 import main as main_15
+# noinspection PyUnresolvedReferences
+from day_16 import main as main_16
+# noinspection PyUnresolvedReferences
+from day_17 import main as main_17
 
 expected_outputs = (
     '1752 measurements are larger than the previous measurement\n1781 sums that are larger than the previous sum\n',
@@ -45,6 +51,9 @@ expected_outputs = (
     'Path count without revisiting small caves: 3495\nPath count visiting single small cave twice: 94849\n',
     '724 dots visible after the first fold\n ##  ###    ## ###  #### ###  #  # #   \n#  # #  #    # #  # #    #  # #  # #   \n#    #  #    # ###  ###  #  # #  # #   \n#    ###     # #  # #    ###  #  # #   \n#  # #    #  # #  # #    # #  #  # #   \n ##  #     ##  ###  #### #  #  ##  ####\n',
     'Result after 10 steps: 2768\nResult after 40 steps: 2914365137499\n',
+    'Lowest total risk for the small cave: 410\nLowest total risk for the big cave: 2809\n',
+    'Sum of version numbers in expression: 893\nExpression result: 4358595186090\n',
+    'Maximum height reached by the probe: 5050\nNumber of distinct initial velocity vectors: 2223\n'
 )
 
 
