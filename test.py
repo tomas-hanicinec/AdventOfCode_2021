@@ -45,6 +45,8 @@ from day_20 import main as main_20
 from day_21 import main as main_21
 # noinspection PyUnresolvedReferences
 from day_22 import main as main_22
+# noinspection PyUnresolvedReferences
+from day_23 import main as main_23
 
 expected_outputs = (
     '1752 measurements are larger than the previous measurement\n1781 sums that are larger than the previous sum\n',
@@ -69,6 +71,7 @@ expected_outputs = (
     '5461 light pixels after 2 enhancements steps\n18226 light pixels after 50 enhancements steps\n',
     'Player lost after 993 deterministic dice rolls with score 900. Final result: 893700\nWinning player wins in 568867175661958 universes with Dirac dice\n',
     '503864 cubes turned on within the [-50..50] region\n1255547543528356 cubes turned on in total\n',
+    'Best score folded (2 room depth): 16489\nBest score unfolded (4 room depth): 43413\n',
 )
 
 
