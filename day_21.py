@@ -6,6 +6,8 @@ DICE_SIDES_DETERMINISTIC = 100
 WINNING_SCORE_DIRAC = 21
 DICE_SIDES_DIRAC = 3
 
+GameCache = Dict[Tuple[bool, Tuple[int, int], Tuple[int, int]], Tuple[int, int]]
+
 
 def main() -> None:
     losing_score, dice_counter = play_deterministic()
@@ -56,7 +58,7 @@ def play_dirac_round(
         positions: Tuple[int, int],
         scores: Tuple[int, int],
         universe_counts: Dict[int, int],
-        cache: Dict[Tuple[bool, Tuple[int, int], Tuple[int, int]], Tuple[int, int]]
+        cache: GameCache
 ) -> Tuple[int, int]:
     if scores[0] >= WINNING_SCORE_DIRAC:
         return 1, 0  # player 1 won in this universe

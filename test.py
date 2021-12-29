@@ -35,6 +35,16 @@ from day_15 import main as main_15
 from day_16 import main as main_16
 # noinspection PyUnresolvedReferences
 from day_17 import main as main_17
+# noinspection PyUnresolvedReferences
+from day_18 import main as main_18
+# noinspection PyUnresolvedReferences
+from day_19 import main as main_19
+# noinspection PyUnresolvedReferences
+from day_20 import main as main_20
+# noinspection PyUnresolvedReferences
+from day_21 import main as main_21
+# noinspection PyUnresolvedReferences
+from day_22 import main as main_22
 
 expected_outputs = (
     '1752 measurements are larger than the previous measurement\n1781 sums that are larger than the previous sum\n',
@@ -53,7 +63,12 @@ expected_outputs = (
     'Result after 10 steps: 2768\nResult after 40 steps: 2914365137499\n',
     'Lowest total risk for the small cave: 410\nLowest total risk for the big cave: 2809\n',
     'Sum of version numbers in expression: 893\nExpression result: 4358595186090\n',
-    'Maximum height reached by the probe: 5050\nNumber of distinct initial velocity vectors: 2223\n'
+    'Maximum height reached by the probe: 5050\nNumber of distinct initial velocity vectors: 2223\n',
+    'Magnitude of the total sum: 4347\nMaximum magnitude from adding two numbers: 4721\n',
+    'Scanners detected 512 distinct beacons\nLargest manhattan distance between two scanners: 16802\n',
+    '5461 light pixels after 2 enhancements steps\n18226 light pixels after 50 enhancements steps\n',
+    'Player lost after 993 deterministic dice rolls with score 900. Final result: 893700\nWinning player wins in 568867175661958 universes with Dirac dice\n',
+    '503864 cubes turned on within the [-50..50] region\n1255547543528356 cubes turned on in total\n',
 )
 
 
