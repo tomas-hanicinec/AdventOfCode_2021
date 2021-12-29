@@ -1,3 +1,4 @@
+import time
 from contextlib import redirect_stdout
 from io import StringIO
 
@@ -47,6 +48,10 @@ from day_21 import main as main_21
 from day_22 import main as main_22
 # noinspection PyUnresolvedReferences
 from day_23 import main as main_23
+# noinspection PyUnresolvedReferences
+from day_24 import main as main_24
+# noinspection PyUnresolvedReferences
+from day_25 import main as main_25
 
 expected_outputs = (
     '1752 measurements are larger than the previous measurement\n1781 sums that are larger than the previous sum\n',
@@ -72,10 +77,13 @@ expected_outputs = (
     'Player lost after 993 deterministic dice rolls with score 900. Final result: 893700\nWinning player wins in 568867175661958 universes with Dirac dice\n',
     '503864 cubes turned on within the [-50..50] region\n1255547543528356 cubes turned on in total\n',
     'Best score folded (2 room depth): 16489\nBest score unfolded (4 room depth): 43413\n',
+    'Maximum valid serial number: 91398299697996\nMinimum valid serial number: 41171183141291\n',
+    'Number of steps before sea cucumbers stop moving: 532\n',
 )
 
 
 def test_day(day_number: int, expected: str) -> None:
+    start = time.time()
     f = StringIO()
     with redirect_stdout(f):
         eval('main_{:0>2}()'.format(day_number))
@@ -86,12 +94,15 @@ def test_day(day_number: int, expected: str) -> None:
         print('DAY {:0>2}: FAILED!'.format(day_number))
         print('Expected:\n{}Got:\n{}'.format(expected, got))
     else:
-        print('DAY {:0>2}: OK'.format(day_number))
+        print('DAY {:0>2}: OK'.format(day_number), '({:.3f} s)'.format(time.time() - start))
 
 
 def main() -> None:
+    start = time.time()
     for index, expected in enumerate(expected_outputs):
         test_day(index + 1, expected)
+    print('---------------------------------')
+    print(f'final time: {round(time.time() - start, 2)} seconds')
 
 
 if __name__ == '__main__':
