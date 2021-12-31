@@ -1,3 +1,4 @@
+from itertools import product
 from typing import List
 
 import utils
@@ -5,61 +6,61 @@ import utils
 BOARD_SIZE = 5
 
 
-def main() -> None:
-    lines = utils.read_strings('inputs/day_04.txt')
-    draw = map(int, lines[0].split(','))
+class Day04:
+    draw: List[int]
+    boards: List['BingoBoard']
 
-    i = 2  # skip the first blank line
-    boards: List[Board] = []
-    while i < len(lines):
-        boards.append(Board(lines[i:(i + BOARD_SIZE)]))
-        i += BOARD_SIZE + 1  # skip the blank line before the next board
+    def __init__(self) -> None:
+        lines = utils.read_strings('inputs/day_04.txt')
+        self.draw = [int(n) for n in lines[0].split(',')]
+        self.boards = [BingoBoard(lines[i:(i + BOARD_SIZE)]) for i in range(2, len(lines), BOARD_SIZE + 1)]
 
-    winning_boards_count = 0
-    for number in draw:
-        for board in boards:
-            if board.bingo:
-                continue
-            board.check(number)
-            if board.bingo:
-                winning_boards_count += 1
-                if winning_boards_count == 1:
-                    print(f'First winning board score: {board.score * number}')
-                if winning_boards_count == len(boards):
-                    print(f'Last winning board score: {board.score * number}')
-                    return
+    def run(self) -> str:
+        winning_board_scores = []
+        for number in self.draw:
+            for board in self.boards:
+                if board.bingo:
+                    continue  # skip boards that are already finished
+                board.check(number)
+                if board.bingo:
+                    winning_board_scores.append((board.score, number))
+
+        first_score, first_number = winning_board_scores[0]
+        last_score, last_number = winning_board_scores[-1]
+        return (
+            f'First winning board score: {first_score * first_number}\n'
+            f'Last winning board score: {last_score * last_number}'
+        )
 
 
-class Board:
-    bingo: bool
+class BingoBoard:
+    _board: List[List[int]]
+    _row_sums: List[int]
+    _col_sums: List[int]
     score: int
-    __row_sums: List[int]
-    __col_sums: List[int]
-    __board: List[List[int]]
+    bingo: bool
 
     def __init__(self, board_lines: List[str]) -> None:
         self.bingo = False
         self.score = 0
-        self.__row_sums = [0] * BOARD_SIZE
-        self.__col_sums = [0] * BOARD_SIZE
-        self.__board = []
+        self._row_sums = [0] * BOARD_SIZE
+        self._col_sums = [0] * BOARD_SIZE
+        self._board = []
         for i in range(BOARD_SIZE):
-            self.__board.append([])
-            for val in board_lines[i].split():
-                self.score += int(val)
-                self.__board[i].append(int(val))
+            line = [int(n) for n in board_lines[i].split()]
+            self.score += sum(line)
+            self._board.append(line)
 
     def check(self, number: int) -> None:
-        for i in range(BOARD_SIZE):
-            for j in range(BOARD_SIZE):
-                if self.__board[i][j] == number:
-                    self.score -= number
-                    self.__row_sums[i] += 1
-                    self.__col_sums[j] += 1
-                    if self.__row_sums[i] == BOARD_SIZE or self.__col_sums[j] == BOARD_SIZE:
-                        self.bingo = True
-                    return  # let's say numbers in the single board do not repeat
+        for i, j in product(range(BOARD_SIZE), range(BOARD_SIZE)):
+            if self._board[i][j] == number:
+                self.score -= number
+                self._row_sums[i] += 1
+                self._col_sums[j] += 1
+                if self._row_sums[i] == BOARD_SIZE or self._col_sums[j] == BOARD_SIZE:
+                    self.bingo = True
+                return  # let's say numbers in the single board do not repeat
 
 
 if __name__ == '__main__':
-    main()
+    print(Day04().run())

@@ -9,12 +9,16 @@ DICE_SIDES_DIRAC = 3
 GameCache = Dict[Tuple[bool, Tuple[int, int], Tuple[int, int]], Tuple[int, int]]
 
 
-def main() -> None:
-    losing_score, dice_counter = play_deterministic()
-    print(f'Player lost after {dice_counter} deterministic dice rolls with score {losing_score}. Final result: {losing_score * dice_counter}')
+class Day21:
 
-    win_counts = play_dirac()
-    print(f'Winning player wins in {max(win_counts)} universes with Dirac dice')
+    @staticmethod
+    def run() -> str:
+        losing_score, dice_counter = play_deterministic()
+        win_counts = play_dirac()
+        return (
+            f'Player lost after {dice_counter} deterministic dice rolls with score {losing_score}. Final result: {losing_score * dice_counter}\n'
+            f'Winning player wins in {max(win_counts)} universes with Dirac dice'
+        )
 
 
 def play_deterministic() -> Tuple[int, int]:
@@ -97,4 +101,4 @@ def move(
 
 
 if __name__ == '__main__':
-    main()
+    print(Day21().run())

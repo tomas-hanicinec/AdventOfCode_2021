@@ -3,16 +3,19 @@ from typing import List, Set, Tuple
 import utils
 
 
-def main() -> None:
-    lines = utils.read_strings('inputs/day_25.txt')
+class Day25:
+    sea_floor: 'SeaFloor'
 
-    sea_floor = SeaFloor(lines)
-    new_steps = sea_floor.step()
-    step_count = 1
-    while new_steps > 0:
-        new_steps = sea_floor.step()
-        step_count += 1
-    print(f'Number of steps before sea cucumbers stop moving: {step_count}')
+    def __init__(self) -> None:
+        self.sea_floor = SeaFloor(utils.read_strings('inputs/day_25.txt'))
+
+    def run(self) -> str:
+        new_steps = self.sea_floor.step()
+        step_count = 1
+        while new_steps > 0:
+            new_steps = self.sea_floor.step()
+            step_count += 1
+        return f'Number of steps before sea cucumbers stop moving: {step_count}'
 
 
 class SeaFloor:
@@ -75,4 +78,4 @@ class SeaFloor:
 
 
 if __name__ == '__main__':
-    main()
+    print(Day25().run())

@@ -4,41 +4,45 @@ from typing import NamedTuple, Set, Tuple
 import utils
 
 
-def main() -> None:
-    line = utils.read_strings('inputs/day_17.txt')[0]
-
-    line = line.replace('target area: x=', '')
-    line = line.replace('y=', '')
-    parts = line.split(', ')
-    x = [int(n) for n in parts[0].split('..')]
-    y = [int(n) for n in parts[1].split('..')]
-
-    target = Target(min(x[0], x[1]), max(x[0], x[1]), min(y[0], y[1]), max(y[0], y[1]))
-    if target.min_x <= 0 or target.max_y >= 0:
-        raise Exception('target must be positioned to the bottom-right from [0,0]')
-
-    # calculate the bounds for the vertical velocity
-    min_x_velocity = math.ceil((math.sqrt(1 + 8 * target.min_x) - 1) / 2)  # any smaller than this and the drag will reduce the forward speed before the target is reached
-    max_x_velocity = target.max_x  # any bigger than this and the probe will overshoot the target at t=1 already
-
-    max_height = 0
-    solutions: Set[Tuple[int, int]] = set()
-    for x_velocity in range(min_x_velocity, max_x_velocity + 1):
-        for y_velocity in get_y_velocity(x_velocity, target):
-            solutions.add((x_velocity, y_velocity))
-            height = get_max_height(y_velocity)
-            if height > max_height:
-                max_height = height
-
-    print(f'Maximum height reached by the probe: {max_height}')
-    print(f'Number of distinct initial velocity vectors: {len(solutions)}')
-
-
 class Target(NamedTuple):
     min_x: int
     max_x: int
     min_y: int
     max_y: int
+
+
+class Day17:
+    target: Target
+
+    def __init__(self) -> None:
+        line = utils.read_strings('inputs/day_17.txt')[0]
+        line = line.replace('target area: x=', '').replace('y=', '')
+        x_interval, y_interval = line.split(', ')
+        x1, x2 = (int(n) for n in x_interval.split('..'))
+        y1, y2 = (int(n) for n in y_interval.split('..'))
+
+        self.target = Target(min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2))
+        if self.target.min_x <= 0 or self.target.max_y >= 0:
+            raise Exception('target must be positioned to the bottom-right from [0,0]')
+
+    def run(self) -> str:
+        # calculate the bounds for the vertical velocity
+        min_x_velocity = math.ceil((math.sqrt(1 + 8 * self.target.min_x) - 1) / 2)  # any smaller than this and the drag will reduce the forward speed before the target is reached
+        max_x_velocity = self.target.max_x  # any bigger than this and the probe will overshoot the target at t=1 already
+
+        max_height = 0
+        solutions: Set[Tuple[int, int]] = set()
+        for x_velocity in range(min_x_velocity, max_x_velocity + 1):
+            for y_velocity in get_y_velocity(x_velocity, self.target):
+                solutions.add((x_velocity, y_velocity))
+                height = get_max_height(y_velocity)
+                if height > max_height:
+                    max_height = height
+
+        return (
+            f'Maximum height reached by the probe: {max_height}\n'
+            f'Number of distinct initial velocity vectors: {len(solutions)}'
+        )
 
 
 def get_y_velocity(x_velocity: int, target: Target) -> Set[int]:
@@ -107,16 +111,16 @@ def get_y_velocity_for_freefall(x_velocity: int, target: Target) -> Set[int]:
 
 def get_x(x_velocity: int, time: int) -> int:
     drag_time = time - 1
-    drag_sum = int((1 + drag_time) * drag_time / 2)
+    drag_sum = (1 + drag_time) * drag_time // 2
     if drag_time > x_velocity:
         zero_drag = drag_time - x_velocity
-        drag_sum -= int((1 + zero_drag) * zero_drag / 2)
+        drag_sum -= (1 + zero_drag) * zero_drag // 2
     return time * x_velocity - drag_sum
 
 
 def get_y(y_velocity: int, time: int) -> int:
     gravity_time = time - 1
-    gravity_sum = int((1 + gravity_time) * gravity_time / 2)
+    gravity_sum = (1 + gravity_time) * gravity_time // 2
     return time * y_velocity - gravity_sum
 
 
@@ -135,4 +139,4 @@ def get_max_height(y_velocity: int) -> int:
 
 
 if __name__ == '__main__':
-    main()
+    print(Day17().run())

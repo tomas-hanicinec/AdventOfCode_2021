@@ -1,26 +1,35 @@
+from copy import deepcopy
 from math import floor, ceil
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 import utils
 
 
-def main() -> None:
-    lines = utils.read_strings('inputs/day_18.txt')
+class Day18:
+    numbers: List['Pair']
 
-    result = Pair.create_from_string(lines[0])
-    for line in lines[1:]:
-        result = result + Pair.create_from_string(line)
-    print(f'Magnitude of the total sum: {result.get_magnitude()}')
+    def __init__(self) -> None:
+        lines = utils.read_strings('inputs/day_18.txt')
+        self.numbers = [Pair.create_from_string(line) for line in lines]
 
-    max_mag = 0
-    for i in range(len(lines)):
-        for j in range(len(lines)):
-            if i != j:
-                res = Pair.create_from_string(lines[i]) + Pair.create_from_string(lines[j])
-                res_mag = res.get_magnitude()
-                if res_mag > max_mag:
-                    max_mag = res_mag
-    print(f'Maximum magnitude from adding two numbers: {max_mag}')
+    def run(self) -> str:
+        total_sum = deepcopy(self.numbers[0])
+        for number in self.numbers[1:]:
+            number = deepcopy(number)
+            total_sum = total_sum + number
+
+        max_mag = 0
+        for i in range(len(self.numbers)):
+            for j in range(len(self.numbers)):
+                if i != j:
+                    res = deepcopy(self.numbers[i]) + deepcopy(self.numbers[j])
+                    res_mag = res.get_magnitude()
+                    if res_mag > max_mag:
+                        max_mag = res_mag
+        return (
+            f'Magnitude of the total sum: {total_sum.get_magnitude()}\n'
+            f'Maximum magnitude from adding two numbers: {max_mag}'
+        )
 
 
 class SnailfishNumber:
@@ -178,4 +187,4 @@ def number_from_string(string: str, number_start: int) -> Tuple[Pair, int]:
 
 
 if __name__ == '__main__':
-    main()
+    print(Day18().run())

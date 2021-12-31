@@ -3,27 +3,29 @@ from typing import Tuple, NamedTuple, List, Optional
 import utils
 
 
-def main() -> None:
-    lines = utils.read_strings('inputs/day_22.txt')
+class Day22:
+    steps: List['RebootStep']
 
-    steps: List[RebootStep] = []
-    for line in lines:
-        parts = line.split(' ')
-        step = RebootStep(
-            True if parts[0] == 'on' else False,
-            parse_dimensions(parts[1].split(','))
+    def __init__(self) -> None:
+        lines = utils.read_strings('inputs/day_22.txt')
+
+        self.steps = []
+        for line in lines:
+            on, cube = line.split(' ')
+            self.steps.append(RebootStep(on == 'on', parse_dimensions(cube.split(','))))
+
+    def run(self) -> str:
+        core = ReactorCore()
+        for step in self.steps:
+            if step.on:
+                core.add(step.cube)
+            else:
+                core.remove(step.cube)
+
+        return (
+            f'{core.get_active_count(Cuboid((-50, 50), (-50, 50), (-50, 50)))} cubes turned on within the [-50..50] region\n'
+            f'{core.get_active_count(None)} cubes turned on in total'
         )
-        steps.append(step)
-
-    core = ReactorCore()
-    for step in steps:
-        if step.on:
-            core.add(step.cube)
-        else:
-            core.remove(step.cube)
-
-    print(f'{core.get_active_count(Cuboid((-50, 50), (-50, 50), (-50, 50)))} cubes turned on within the [-50..50] region')
-    print(f'{core.get_active_count(None)} cubes turned on in total')
 
 
 class Cuboid(NamedTuple):
@@ -108,4 +110,4 @@ def parse_dimensions(dimensions: List[str]) -> Cuboid:
 
 
 if __name__ == '__main__':
-    main()
+    print(Day22().run())

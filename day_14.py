@@ -3,25 +3,33 @@ from typing import Dict
 import utils
 
 
-def main() -> None:
-    lines = utils.read_strings('inputs/day_14.txt')
-    template = lines[0]
-    instructions: Dict[str, str] = {}
-    for line in lines[2:]:
-        expl = line.split(' -> ')
-        instructions[expl[0]] = expl[1]
+class Day14:
+    formula: 'PolymerFormula'
 
-    formula = PolymerFormula(template, instructions)
-    for i in range(40):
-        formula.do_step()
-        if i == 9:
-            print(f'Result after 10 steps: {formula.get_result()}')
-    print(f'Result after 40 steps: {formula.get_result()}')
+    def __init__(self) -> None:
+        lines = utils.read_strings('inputs/day_14.txt')
+        template = lines[0]
+        instructions: Dict[str, str] = {}
+        for line in lines[2:]:
+            pair, insertion = line.split(' -> ')
+            instructions[pair] = insertion
+
+        self.formula = PolymerFormula(template, instructions)
+
+    def run(self) -> str:
+        result_after_9 = 0
+        for i in range(40):
+            self.formula.do_step()
+            if i == 9:
+                result_after_9 = self.formula.get_result()
+
+        return (
+            f'Result after 10 steps: {result_after_9}\n'
+            f'Result after 40 steps: {self.formula.get_result()}'
+        )
 
 
 class PolymerFormula:
-    template: str
-    instructions: Dict[str, str]
     pair_counts: Dict[str, int]
     element_counts: Dict[str, int]
 
@@ -59,12 +67,12 @@ class PolymerFormula:
         return max_count - min_count
 
     def add_element(self, element: str, count: int) -> None:
-        self.element_counts[element] = self.element_counts[element] + count if element in self.element_counts else count
+        self.element_counts[element] = self.element_counts.get(element, 0) + count
 
     def add_pair(self, a: str, b: str, count: int) -> None:
         pair = "".join([a, b])
-        self.pair_counts[pair] = self.pair_counts[pair] + count if pair in self.pair_counts else count
+        self.pair_counts[pair] = self.pair_counts.get(pair, 0) + count
 
 
 if __name__ == '__main__':
-    main()
+    print(Day14().run())

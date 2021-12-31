@@ -1,62 +1,74 @@
-from typing import List, Dict, Callable, Tuple
+from dataclasses import dataclass
+from typing import Dict, Callable, List
 
 import utils
 
 
-def main() -> None:
-    commands = utils.read_strings('inputs/day_02.txt')
+@dataclass
+class SubmarinePosition:
+    distance: int
+    depth: int
+    aim: int
 
-    submarine1 = Submarine(0, 0, 0, 1)
-    submarine2 = Submarine(0, 0, 0, 2)
-    for command in commands:
-        parts = str(command).split(' ')
-        submarine1.move(parts[0], int(parts[1]))
-        submarine2.move(parts[0], int(parts[1]))
 
-    print(f'Submarine position (no aim): {submarine1.position() * submarine1.depth()}')
-    print(f'Submarine position (with aim): {submarine2.position() * submarine2.depth()}')
+SubmarinePositionIncrement = SubmarinePosition
+InstructionSet = Dict[str, Callable[[int, int], SubmarinePositionIncrement]]
+
+
+class Day02:
+    instruction_set_v1 = {
+        'forward': lambda val, _: SubmarinePositionIncrement(val, 0, 0),
+        'up': lambda val, _: SubmarinePositionIncrement(0, -val, 0),
+        'down': lambda val, _: SubmarinePositionIncrement(0, val, 0),
+    }
+    instruction_set_v2 = {
+        'forward': lambda val, aim: SubmarinePositionIncrement(val, aim * val, 0),
+        'up': lambda val, aim: SubmarinePositionIncrement(0, 0, -val),
+        'down': lambda val, aim: SubmarinePositionIncrement(0, 0, val),
+    }
+    commands: List[str]
+
+    def __init__(self) -> None:
+        self.commands = utils.read_strings('inputs/day_02.txt')
+
+    def run(self) -> str:
+        submarine1 = Submarine(SubmarinePosition(0, 0, 0), self.instruction_set_v1)
+        submarine2 = Submarine(SubmarinePosition(0, 0, 0), self.instruction_set_v2)
+        for command in self.commands:
+            command_name, value = str(command).split(' ')
+            submarine1.move(command_name, int(value))
+            submarine2.move(command_name, int(value))
+
+        return (
+            f'Submarine position (no aim): {submarine1.distance * submarine1.depth}\n'
+            f'Submarine position (with aim): {submarine2.distance * submarine2.depth}'
+        )
 
 
 class Submarine:
-    __instruction_map: Dict[str, List[Callable[[int, int], Tuple[int, int, int]]]] = {
-        'forward': [
-            lambda val, _: (val, 0, 0),
-            lambda val, aim: (val, aim * val, 0)
-        ],
-        'up': [
-            lambda val, _: (0, -val, 0),
-            lambda val, aim: (0, 0, -val)
-        ],
-        'down': [
-            lambda val, _: (0, val, 0),
-            lambda val, aim: (0, 0, val)
-        ]
-    }
-    __position: int
-    __depth: int
-    __aim: int
-    __version: int
+    _position: SubmarinePosition
+    instruction_set: InstructionSet
 
-    def __init__(self, position: int, depth: int, aim: int, version: int) -> None:
-        self.__position = position
-        self.__depth = depth
-        self.__aim = aim
-        self.__version = version
+    def __init__(self, position: SubmarinePosition, instruction_set: InstructionSet) -> None:
+        self._position = position
+        self.instruction_set = instruction_set
 
-    def move(self, command: str, value: int) -> None:
-        command_instructions = self.__instruction_map[command]
-        instruction = command_instructions[self.__version - 1]
-        d_pos, d_depth, d_aim = instruction(value, self.__aim)
-        self.__position += d_pos
-        self.__depth += d_depth
-        self.__aim += d_aim
+    def move(self, command_name: str, value: int) -> None:
+        increment = self.instruction_set[command_name](value, self._position.aim)
+        self._position = SubmarinePosition(
+            distance=self._position.distance + increment.distance,
+            depth=self._position.depth + increment.depth,
+            aim=self._position.aim + increment.aim,
+        )
 
-    def position(self) -> int:
-        return self.__position
+    @property
+    def distance(self) -> int:
+        return self._position.distance
 
+    @property
     def depth(self) -> int:
-        return self.__depth
+        return self._position.depth
 
 
 if __name__ == '__main__':
-    main()
+    print(Day02().run())

@@ -1,50 +1,52 @@
+from itertools import product
+from math import prod
 from typing import Tuple, List, Set
 
 import utils
 
 
-def main() -> None:
-    lines = utils.read_strings('inputs/day_09.txt')
-    floor_map = FloorMap(lines)
+class Day09:
 
-    risk_level_sum = 0
-    basin_sizes = []
-    for low_point in floor_map.get_low_points():
-        risk_level_sum += 1 + floor_map.get_height(low_point)
-        basin_sizes.append(floor_map.get_basin_size(low_point))
+    def __init__(self) -> None:
+        self.floor_map = FloorMap(utils.read_strings('inputs/day_09.txt'))
 
-    basin_sizes.sort(reverse=True)
-    top3_size_product = 1
-    for size in basin_sizes[:3]:
-        top3_size_product *= size
+    def run(self) -> str:
+        risk_level_sum = 0
+        basin_sizes = []
+        for low_point in self.floor_map.get_low_points():
+            risk_level_sum += 1 + self.floor_map.get_height(low_point)
+            basin_sizes.append(self.floor_map.get_basin_size(low_point))
 
-    print(f'Sum of the low point risk level: {risk_level_sum}')
-    print(f'Sizes of three largest basins multiplied: {top3_size_product}')
+        basin_sizes.sort(reverse=True)
+        top3_size_product = prod(basin_sizes[:3])
+
+        return (
+            f'Sum of the low point risk level: {risk_level_sum}\n'
+            f'Sizes of three largest basins multiplied: {top3_size_product}'
+        )
 
 
 class FloorMap:
-    __m: List[List[int]]
-    __rows: int
-    __columns: int
+    _m: List[List[int]]
+    _rows: int
+    _cols: int
 
     def __init__(self, lines: List[str]) -> None:
-        self.__m = []
+        self._m = []
         for line in lines:
-            self.__m.append([int(i) for i in line])
+            self._m.append([int(i) for i in line])
 
-        self.__rows = len(self.__m)
-        self.__columns = len(self.__m[0])
+        self._rows = len(self._m)
+        self._columns = len(self._m[0])
 
     def get_height(self, point: Tuple[int, int]) -> int:
-        return self.__m[point[0]][point[1]]
+        return self._m[point[0]][point[1]]
 
     def get_low_points(self) -> Set[Tuple[int, int]]:
-        low_points: Set[Tuple[int, int]] = set()
-        for i in range(self.__rows):
-            for j in range(self.__columns):
-                point = (i, j)
-                if self.is_low_point(point):
-                    low_points.add(point)
+        low_points = set()
+        for point in product(range(self._rows), range(self._columns)):
+            if self.is_low_point(point):
+                low_points.add(point)
         return low_points
 
     def is_low_point(self, point: Tuple[int, int]) -> bool:
@@ -57,7 +59,7 @@ class FloorMap:
         neighbours = []
         for offset in ((0, 1), (0, -1), (1, 0), (-1, 0)):
             neighbour = (point[0] + offset[0], point[1] + offset[1])
-            if 0 <= neighbour[0] < self.__rows and 0 <= neighbour[1] < self.__columns:
+            if 0 <= neighbour[0] < self._rows and 0 <= neighbour[1] < self._columns:
                 neighbours.append(neighbour)
         return neighbours
 
@@ -77,4 +79,4 @@ class FloorMap:
 
 
 if __name__ == '__main__':
-    main()
+    print(Day09().run)

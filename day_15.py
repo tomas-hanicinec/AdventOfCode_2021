@@ -3,16 +3,24 @@ from typing import List, Tuple, Dict, Iterator
 import utils
 
 
-def main() -> None:
-    lines = utils.read_strings('inputs/day_15.txt')
+class Day15:
+    input_lines: List[str]
 
-    cave_map_small = get_cave_map(lines, 1)
-    path_finder = PathFinder(cave_map_small)
-    print(f'Lowest total risk for the small cave: {path_finder.run()}')
+    def __init__(self) -> None:
+        self.input_lines = utils.read_strings('inputs/day_15.txt')
 
-    cave_map_big = get_cave_map(lines, 5)
-    path_finder = PathFinder(cave_map_big)
-    print(f'Lowest total risk for the big cave: {path_finder.run()}')
+    def run(self) -> str:
+        cave_map_small = get_cave_map(self.input_lines, 1)
+        path_finder = PathFinder(cave_map_small)
+        small_cave_risk = path_finder.run()
+
+        cave_map_big = get_cave_map(self.input_lines, 5)
+        path_finder = PathFinder(cave_map_big)
+
+        return (
+            f'Lowest total risk for the small cave: {small_cave_risk}\n'
+            f'Lowest total risk for the big cave: {path_finder.run()}'
+        )
 
 
 def get_cave_map(lines: List[str], multiplicator: int) -> List[List[int]]:
@@ -60,7 +68,7 @@ class PathFinder:
         for y, _ in enumerate(cave_map):
             for x, weight in enumerate(cave_map[y]):
                 point = MapPoint(x, y, weight, self.max_path_length)
-                self.points[(point.x, point.y)] = point
+                self.points[point.x, point.y] = point
 
     # basically a Dijkstra algorith for shortest graph path
     def run(self) -> int:
@@ -98,10 +106,10 @@ class PathFinder:
         self.point_queue.insert(index, point)
 
     def get_neighbours(self, coordinates: Tuple[int, int]) -> Iterator[Tuple[int, int]]:
-        for offset in [(0, 1), (0, -1), (-1, 0), (1, 0)]:
-            p = (coordinates[0] + offset[0], coordinates[1] + offset[1])
-            if 0 <= p[0] < self.size and 0 <= p[1] < self.size:
-                yield p
+        for dx, dy in [(0, 1), (0, -1), (-1, 0), (1, 0)]:
+            x, y = coordinates[0] + dx, coordinates[1] + dy
+            if 0 <= x < self.size and 0 <= y < self.size:
+                yield x, y
 
 
 def bisect_left(a: List[MapPoint], x: int) -> int:
@@ -117,4 +125,4 @@ def bisect_left(a: List[MapPoint], x: int) -> int:
 
 
 if __name__ == '__main__':
-    main()
+    print(Day15().run())

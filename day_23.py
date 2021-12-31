@@ -7,20 +7,27 @@ FINAL_ROOMS = {'A': 2, 'B': 4, 'C': 6, 'D': 8}
 MAX_POSSIBLE_SCORE = 1000000000
 
 
-def main() -> None:
-    game = Game(2, '...DC..DC..AB..AB..', '...aa..bb..cc..dd..')
-    result = find_best_sequence(0, game, MAX_POSSIBLE_SCORE, {})
-    if result is None:
-        raise Exception('no sequence found')
-    best_score, best_sequence = result
-    print(f'Best score folded (2 room depth): {best_score}')
+class Day23:
+    game1: 'Game'
+    game2: 'Game'
 
-    game = Game(4, '...DDDC..DCBC..ABAB..AACB..', '...aaaa..bbbb..cccc..dddd..')
-    result = find_best_sequence(0, game, MAX_POSSIBLE_SCORE, {})
-    if result is None:
-        raise Exception('no sequence found')
-    best_score, best_sequence = result
-    print(f'Best score unfolded (4 room depth): {best_score}')
+    def __init__(self) -> None:
+        self.game1 = Game(2, '...DC..DC..AB..AB..', '...aa..bb..cc..dd..')
+        self.game2 = Game(4, '...DDDC..DCBC..ABAB..AACB..', '...aaaa..bbbb..cccc..dddd..')
+
+    def run(self) -> str:
+        return (
+            f'Best score folded (2 room depth): {self.get_best_result(self.game1)}\n'
+            f'Best score unfolded (4 room depth): {self.get_best_result(self.game2)}'
+        )
+
+    @staticmethod
+    def get_best_result(game: 'Game') -> int:
+        result = find_best_sequence(0, game, MAX_POSSIBLE_SCORE, {})
+        if result is None:
+            raise Exception('no sequence found')
+        best_score, best_sequence = result
+        return best_score
 
 
 class Move(NamedTuple):
@@ -31,6 +38,10 @@ class Move(NamedTuple):
 
 
 class Game:
+    positions: Dict[Tuple[int, int], str]
+    end_state: str
+    room_depth: int
+    energy_spent: int
 
     def __init__(self, room_depth: int, start_state: str, end_state: str) -> None:
         self.room_depth = room_depth
@@ -199,4 +210,4 @@ def get_default_positions(room_depth: int) -> Dict[Tuple[int, int], str]:
 
 
 if __name__ == '__main__':
-    main()
+    print(Day23().run())

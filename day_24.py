@@ -3,36 +3,41 @@ from typing import Dict, List
 import utils
 
 
-def main() -> None:
-    lines = utils.read_strings('inputs/day_24.txt')
+class Day24:
+    params: List[List[int]]
 
-    chunk_number = chunk_index = 0
-    params: List[List[int]] = [[]]
-    for line in lines[1:]:
-        if line.split(' ')[0] == 'inp':
-            chunk_number += 1
-            chunk_index = 0
-            params.append([])
-            continue
-        if chunk_index == 3 or chunk_index == 4 or chunk_index == 14:
-            params[chunk_number].append(int(line.split(' ')[2]))
-        chunk_index += 1
+    def __init__(self) -> None:
+        chunk_number = chunk_index = 0
+        self.params = [[]]
+        for line in utils.read_strings('inputs/day_24.txt')[1:]:
+            if line.split(' ')[0] == 'inp':
+                chunk_number += 1
+                chunk_index = 0
+                self.params.append([])
+                continue
+            if chunk_index == 3 or chunk_index == 4 or chunk_index == 14:
+                self.params[chunk_number].append(int(line.split(' ')[2]))
+            chunk_index += 1
 
-    zs = {'': [0]}
-    for depth in range(13, -1, -1):
-        new_zs = get_next_zs(zs, params[depth])
-        zs = new_zs
+    def run(self) -> str:
+        zs = {'': [0]}
+        for depth in range(13, -1, -1):
+            new_zs = get_next_zs(zs, self.params[depth])
+            zs = new_zs
 
-    max_valid = 0
-    min_valid = 99999999999999
-    for num in zs:
-        valid_number = int(num)
-        if max_valid < valid_number:
-            max_valid = valid_number
-        if min_valid > valid_number:
-            min_valid = valid_number
-    print(f'Maximum valid serial number: {max_valid}')
-    print(f'Minimum valid serial number: {min_valid}')
+        max_valid = 0
+        min_valid = 99999999999999
+        for num in zs:
+            valid_number = int(num)
+            if max_valid < valid_number:
+                max_valid = valid_number
+            if min_valid > valid_number:
+                min_valid = valid_number
+
+        return (
+            f'Maximum valid serial number: {max_valid}\n'
+            f'Minimum valid serial number: {min_valid}'
+        )
 
 
 def get_next_zs(previous_zs: Dict[str, List[int]], params: List[int]) -> Dict[str, List[int]]:
@@ -68,4 +73,4 @@ def get_zs_for_input(params: List[int], w: int, z: int) -> List[int]:
 
 
 if __name__ == '__main__':
-    main()
+    print(Day24().run())

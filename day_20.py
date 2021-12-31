@@ -3,39 +3,48 @@ from typing import Dict, Tuple, List
 import utils
 
 
-def main() -> None:
-    lines = utils.read_strings('inputs/day_20.txt')
+class Day20:
+    enhancer: 'ImageEnhancer'
 
-    enhancer = ImageEnhancer(lines[0], lines[2:])
-    for step in range(50):
-        if step == 2:
-            print(f'{enhancer.count_light_pixels()} light pixels after 2 enhancements steps')
-        enhancer.enhance()
-    print(f'{enhancer.count_light_pixels()} light pixels after 50 enhancements steps')
+    def __init__(self) -> None:
+        lines = utils.read_strings('inputs/day_20.txt')
+        self.enhancer = ImageEnhancer(lines[0], lines[2:])
+
+    def run(self) -> str:
+        count_after_2 = 0
+        for step in range(50):
+            if step == 2:
+                count_after_2 = self.enhancer.count_light_pixels()
+            self.enhancer.enhance()
+
+        return (
+            f'{count_after_2} light pixels after 2 enhancements steps\n'
+            f'{self.enhancer.count_light_pixels()} light pixels after 50 enhancements steps'
+        )
 
 
 class ImageEnhancer:
-    pixels: Dict[Tuple[int, int], bool]
+    _pixels: Dict[Tuple[int, int], bool]
     algorithm: List[bool]
     x_limits: Tuple[int, int]
     y_limits: Tuple[int, int]
-    __current_step: int
-    __pixel_value_cache: Dict[Tuple[int, int], bool]
+    _current_step: int
+    _pixel_value_cache: Dict[Tuple[int, int], bool]
 
     def __init__(self, algorithm: str, image: List[str]) -> None:
-        self.__current_step = 0
-        self.algorithm = [True if x == '#' else False for x in algorithm]
+        self._current_step = 0
+        self.algorithm = [(x == '#') for x in algorithm]
         self.y_limits = (0, len(image) - 1)
         self.x_limits = (0, len(image[0]) - 1)
-        self.__pixels = {}
+        self._pixels = {}
         for y, _ in enumerate(image):
             for x, _ in enumerate(image[y]):
-                self.__pixels[(x, y)] = True if image[y][x] == '#' else False
+                self._pixels[(x, y)] = (image[y][x] == '#')
 
     def enhance(self) -> None:
-        self.__pixel_value_cache = {}
-        self.__current_step += 1
-        outside_value = self.get_outside_pixel_value(self.__current_step)
+        self._pixel_value_cache = {}
+        self._current_step += 1
+        outside_value = self.get_outside_pixel_value(self._current_step)
 
         # expand by 1 in each direction, only the pixels within these limits have to be calculated
         # the (infinite) rest of the pixels all have outside_value in this step and will change uniformly in the next step
@@ -48,7 +57,7 @@ class ImageEnhancer:
             for x in range(x_limits[0], x_limits[1] + 1):
                 new_image[(x, y)] = self.get_next_pixel_value(x, y, outside_value)
 
-        self.__pixels = new_image
+        self._pixels = new_image
         self.x_limits = x_limits
         self.y_limits = y_limits
 
@@ -65,7 +74,7 @@ class ImageEnhancer:
         # get the index in the algorithm from the 3x3 box
         for y in range(pixel_y - 1, pixel_y + 2):
             for x in range(pixel_x - 1, pixel_x + 2):
-                current_value = self.__pixel_value_cache[(x, y)] if (x, y) in self.__pixel_value_cache else self.get_current_pixel_value(x, y, outside_value)
+                current_value = self._pixel_value_cache[(x, y)] if (x, y) in self._pixel_value_cache else self.get_current_pixel_value(x, y, outside_value)
                 algo_index = 2 * algo_index + current_value
 
         return self.algorithm[algo_index]
@@ -75,16 +84,16 @@ class ImageEnhancer:
             # pixel outside current scope -> use the precalculated value for surrounding pixels
             return outside_value
 
-        self.__pixel_value_cache[(x, y)] = self.__pixels[(x, y)]
-        return self.__pixels[(x, y)]  # return the stored value
+        self._pixel_value_cache[(x, y)] = self._pixels[(x, y)]
+        return self._pixels[(x, y)]  # return the stored value
 
     def count_light_pixels(self) -> int:
         counter = 0
-        for key in self.__pixels:
-            if self.__pixels[key]:
+        for key in self._pixels:
+            if self._pixels[key]:
                 counter += 1
         return counter
 
 
 if __name__ == '__main__':
-    main()
+    print(Day20().run())

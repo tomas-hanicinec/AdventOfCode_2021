@@ -5,60 +5,65 @@ from typing import Tuple, List, Dict, Callable, Optional, Set
 import utils
 
 
-def main() -> None:
-    # read scanners and beacons from files
-    lines = utils.read_strings('inputs/day_19.txt')
-    scanners = []
-    scanner_id = 0
-    scanner_beacons: List[Point] = []
-    for line in lines:
-        if line[0:3] == '---':
-            continue  # scanner header
-        if line == '':
-            # end of scanner, add to list
-            scanners.append(Scanner(scanner_id, scanner_beacons))
-            scanner_beacons = []
-            scanner_id += 1
-            continue
-        coords = line.split(',')
-        scanner_beacons.append((int(coords[0]), int(coords[1]), int(coords[2])))
-    scanners.append(Scanner(scanner_id, scanner_beacons))  # append the last scanner (no newline at the end)
+class Day19:
+    scanners: List['Scanner']
 
-    # identify overlapping (matched) scanners (each scanner should overlap with at least one other scanner)
-    matched = {0}
-    queue = {0}
-    while len(matched) < len(scanners) and len(queue) > 0:
-        i = queue.pop()
-        for j, _ in enumerate(scanners):
-            if j in matched:
-                continue  # scanners i and j are already matched
-            rotation, offset = get_scanners_position(scanners[i], scanners[j])
-            if rotation is None or offset is None:
-                continue  # scanner j cannot be matched to scanner i (not enough overlap)
-            # found new matched scanner, adjust its position to the calculated one
-            scanners[j].set_offsets(rotation, offset, i)
-            matched.add(j)
-            queue.add(j)
-    if len(matched) < len(scanners):
-        raise Exception(f'could only match {len(matched)} scanners, not enough overlap in the input')
+    def __init__(self) -> None:
+        self.scanners = []
+        scanner_id = 0
+        scanner_beacons: List[Tuple[int, int, int]] = []
+        for line in utils.read_strings('inputs/day_19.txt'):
+            if line[0:3] == '---':
+                continue  # scanner header
+            if line == '':
+                # end of scanner, add to list
+                self.scanners.append(Scanner(scanner_id, scanner_beacons))
+                scanner_beacons = []
+                scanner_id += 1
+                continue
+            x, y, z = line.split(',')
+            scanner_beacons.append((int(x), int(y), int(z)))
+        self.scanners.append(Scanner(scanner_id, scanner_beacons))  # append the last scanner (no newline at the end)
 
-    # count all distinct beacons
-    beacons_union: Set[Point] = set()
-    for i, _ in enumerate(scanners):
-        beacons = get_beacons_absolute(scanners, i)
-        beacons_union = beacons_union.union(beacons)
-    print(f'Scanners detected {len(beacons_union)} distinct beacons')
+    def run(self) -> str:
+        # identify overlapping (matched) scanners (each scanner should overlap with at least one other scanner)
+        matched = {0}
+        queue = {0}
+        while len(matched) < len(self.scanners) and len(queue) > 0:
+            i = queue.pop()
+            for j, scanner in enumerate(self.scanners):
+                if j in matched:
+                    continue  # scanners i and j are already matched
+                rotation, offset = get_scanners_position(self.scanners[i], scanner)
+                if rotation is None or offset is None:
+                    continue  # scanner j cannot be matched to scanner i (not enough overlap)
+                # found new matched scanner, adjust its position to the calculated one
+                scanner.set_offsets(rotation, offset, i)
+                matched.add(j)
+                queue.add(j)
+        if len(matched) < len(self.scanners):
+            raise Exception(f'could only match {len(matched)} scanners, not enough overlap in the input')
 
-    # get the biggest manhattan distance between scanners
-    largest = 0
-    for i, _ in enumerate(scanners):
-        for j in range(i + 1, len(scanners)):
-            oa = get_offset_absolute(scanners, i)
-            ob = get_offset_absolute(scanners, j)
-            dist = abs(oa[0] - ob[0]) + abs(oa[1] - ob[1]) + abs(oa[2] - ob[2])
-            if dist > largest:
-                largest = dist
-    print(f'Largest manhattan distance between two scanners: {largest}')
+        # count all distinct beacons
+        beacons_union: Set[Point] = set()
+        for i, _ in enumerate(self.scanners):
+            beacons = get_beacons_absolute(self.scanners, i)
+            beacons_union = beacons_union.union(beacons)
+
+        # get the biggest manhattan distance between scanners
+        largest = 0
+        for i, _ in enumerate(self.scanners):
+            for j in range(i + 1, len(self.scanners)):
+                ax, ay, az = get_offset_absolute(self.scanners, i)
+                bx, by, bz = get_offset_absolute(self.scanners, j)
+                dist = abs(ax - bx) + abs(ay - by) + abs(az - bz)
+                if dist > largest:
+                    largest = dist
+
+        return (
+            f'Scanners detected {len(beacons_union)} distinct beacons\n'
+            f'Largest manhattan distance between two scanners: {largest}'
+        )
 
 
 Point = Tuple[int, int, int]
@@ -246,4 +251,4 @@ def rotate(point: Point, rotation_id: int) -> Point:
 
 
 if __name__ == '__main__':
-    main()
+    print(Day19().run())

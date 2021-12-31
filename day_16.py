@@ -4,15 +4,19 @@ from typing import List, Tuple, Dict, Callable
 import utils
 
 
-def main() -> None:
-    lines = utils.read_strings('inputs/day_16.txt')
+class Day16:
+    expression: 'BITSExpression'
 
-    binary = get_binary_string(lines[0])
-    expression = BITSExpression(binary)
-    versions, result = expression.evaluate()
+    def __init__(self) -> None:
+        lines = utils.read_strings('inputs/day_16.txt')
+        self.expression = BITSExpression(get_binary_string(lines[0]))
 
-    print(f'Sum of version numbers in expression: {versions}')
-    print(f'Expression result: {result}')
+    def run(self) -> str:
+        versions, result = self.expression.evaluate()
+        return (
+            f'Sum of version numbers in expression: {versions}\n'
+            f'Expression result: {result}'
+        )
 
 
 def get_binary_string(hex_string: str) -> str:
@@ -29,10 +33,10 @@ class BITSExpression:
         self.expr = expression
 
     def evaluate(self) -> Tuple[int, int]:
-        versions, result, end = self.__evaluate_from_index(0)
+        versions, result, end = self._evaluate_from_index(0)
         return versions, result
 
-    def __evaluate_from_index(self, start_index: int) -> Tuple[int, int, int]:
+    def _evaluate_from_index(self, start_index: int) -> Tuple[int, int, int]:
         current = start_index
         version_number = int(self.expr[current:current + 3], 2)
         current += 3
@@ -41,7 +45,7 @@ class BITSExpression:
 
         # literal value packet -> just return
         if packet_id == self.literal_value_packet_id:
-            value, value_end_index = self.__get_literal_value(current)
+            value, value_end_index = self._get_literal_value(current)
             return version_number, value, value_end_index
 
         # subpackets -> process recursively
@@ -55,7 +59,7 @@ class BITSExpression:
             length = int(self.expr[current:current + 15], 2)
             current = start = current + 15
             while current < start + length:
-                versions, result, end = self.__evaluate_from_index(current)
+                versions, result, end = self._evaluate_from_index(current)
                 versions_total += versions
                 results.append(result)
                 current = end
@@ -63,15 +67,15 @@ class BITSExpression:
             count = int(self.expr[current:current + 11], 2)
             current += 11
             for _ in range(count):
-                versions, result, end = self.__evaluate_from_index(current)
+                versions, result, end = self._evaluate_from_index(current)
                 versions_total += versions
                 results.append(result)
                 current = end
 
-        result = self.__get_result(packet_id, results)
+        result = self._get_result(packet_id, results)
         return versions_total, result, current
 
-    def __get_literal_value(self, start_index: int) -> Tuple[int, int]:
+    def _get_literal_value(self, start_index: int) -> Tuple[int, int]:
         current = start_index
         value_str = ''
         while self.expr[current] != '0':
@@ -81,7 +85,7 @@ class BITSExpression:
         return int(value_str, 2), current + 5
 
     @staticmethod
-    def __get_result(packet_id: int, results: List[int]) -> int:
+    def _get_result(packet_id: int, results: List[int]) -> int:
         mapping: Dict[int, Callable[[List[int]], int]] = {
             0: lambda r: sum(r),
             1: lambda r: math.prod(r),
@@ -95,4 +99,4 @@ class BITSExpression:
 
 
 if __name__ == '__main__':
-    main()
+    print(Day16().run())

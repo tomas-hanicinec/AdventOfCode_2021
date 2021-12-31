@@ -3,31 +3,32 @@ from typing import List
 import utils
 
 
-def main() -> None:
-    depths = utils.read_integers('inputs/day_01.txt')
-    print(f'{count_increases(depths, 1)} measurements are larger than the previous measurement')
-    print(f'{count_increases(depths, 3)} sums that are larger than the previous sum')
+class Day01:
+    depths: List[int]
 
+    def __init__(self) -> None:
+        self.depths = utils.read_integers('inputs/day_01.txt')
 
-def count_increases(depths: List[int], window_size: int) -> int:
-    # calculate the first window sum
-    previous_sum: int = 0
-    for depth in depths[0:window_size]:
-        previous_sum += depth
+    def run(self) -> str:
+        return (
+            f'{self.count_increases(1)} measurements are larger than the previous measurement\n'
+            f'{self.count_increases(3)} sums that are larger than the previous sum'
+        )
 
-    # loop through the rest of the input, count increases
-    result: int = 0
-    index = window_size
-    while index < len(depths):
-        current_sum = previous_sum + depths[index] - depths[index - window_size]  # slide the window forward
-        if current_sum > previous_sum:
-            result += 1
+    def count_increases(self, window_size: int) -> int:
+        previous_sum = sum(self.depths[0:window_size])
 
-        previous_sum = current_sum
-        index += 1
+        # loop through the rest of the input, count increases
+        result = 0
+        for i, depth in enumerate(self.depths[window_size:]):
+            current_sum = previous_sum + depth - self.depths[i]  # slide the window forward
+            if current_sum > previous_sum:
+                result += 1
 
-    return result
+            previous_sum = current_sum
+
+        return result
 
 
 if __name__ == '__main__':
-    main()
+    print(Day01().run())
