@@ -40,9 +40,9 @@ class SeaFloor:
                     self.cucumbers_south.add((i, j))
 
     def step(self) -> int:
-        moves = self.move_east()
-        moves += self.move_south()
-        return moves
+        moves_count = self.move_east()
+        moves_count += self.move_south()
+        return moves_count
 
     def move_east(self) -> int:
         moves = {}

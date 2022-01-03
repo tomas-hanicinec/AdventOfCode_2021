@@ -165,8 +165,8 @@ def match_by_distance(a: Scanner, b: Scanner) -> List[BeaconDistanceMatch]:
     da = get_distances(a)
     db = get_distances(b)
 
-    map_a: Dict[Point, Set[BeaconPair]] = defaultdict(set)
-    map_b: Dict[Point, Set[BeaconPair]] = defaultdict(set)
+    map_a = defaultdict(set)
+    map_b = defaultdict(set)
     for beacon_pair, distance in da.items():
         map_a[distance].add(beacon_pair)
     for beacon_pair, distance in db.items():
@@ -182,13 +182,11 @@ def match_by_distance(a: Scanner, b: Scanner) -> List[BeaconDistanceMatch]:
 
 # calculate normalized distance (in all 3 coordinates) for every pair of scanner beacons
 def get_distances(scanner: Scanner) -> Distances:
-    def get_distance(a: Point, b: Point) -> Point:
-        return abs(b[0] - a[0]), abs(b[1] - a[1]), abs(b[2] - a[2])
-
     distances = {}
-    for i, _ in enumerate(scanner.beacons):
+    for i in range(len(scanner.beacons)):
         for j in range(i + 1, len(scanner.beacons)):
-            distance = get_distance(scanner.beacons[i], scanner.beacons[j])
+            a, b = scanner.beacons[i], scanner.beacons[j]
+            distance = abs(b[0] - a[0]), abs(b[1] - a[1]), abs(b[2] - a[2])
             normalized = sorted(distance)
             distances[(i, j)] = (normalized[0], normalized[1], normalized[2])
 

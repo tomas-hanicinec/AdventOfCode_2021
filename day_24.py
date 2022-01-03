@@ -1,75 +1,80 @@
-from typing import Dict, List
+from collections import defaultdict
+from typing import Dict, List, Tuple, Optional, Set
 
 import utils
 
 
 class Day24:
-    params: List[List[int]]
+    params: List[Tuple[int, int, int]]
 
     def __init__(self) -> None:
-        chunk_number = chunk_index = 0
-        self.params = [[]]
-        for line in utils.read_strings('inputs/day_24.txt')[1:]:
-            if line.split(' ')[0] == 'inp':
-                chunk_number += 1
-                chunk_index = 0
-                self.params.append([])
-                continue
-            if chunk_index == 3 or chunk_index == 4 or chunk_index == 14:
-                self.params[chunk_number].append(int(line.split(' ')[2]))
-            chunk_index += 1
+        # split given instructions to chunks (one for every input instruction)
+        # extract the variable params from each chunk (apart from those, each chunk is exactly the same)
+        def get_param(instruction: str) -> int:
+            return int(instruction.split(' ')[2])
+
+        self.params = []
+        lines = utils.read_strings('inputs/day_24.txt')
+        for chunk_number in range(14):
+            chunk_instructions = lines[18 * chunk_number:18 * chunk_number + 18]
+            self.params.append((
+                get_param(chunk_instructions[4]),
+                get_param(chunk_instructions[5]),
+                get_param(chunk_instructions[15]),
+            ))
 
     def run(self) -> str:
-        zs = {'': [0]}
+        # start with the "final" 0 (meaning a valid serial number) and get all the possible "Z" register values for all the remaining levels
+        z_values = {0: {''}}
         for depth in range(13, -1, -1):
-            new_zs = get_next_zs(zs, self.params[depth])
-            zs = new_zs
+            # each iteration fills the z_values with one level of possible Z-values paired with corresponding input values
+            new_z_values = get_next_z_values(z_values, self.params[depth][1], self.params[depth][2])
+            z_values = new_z_values
 
-        max_valid = 0
-        min_valid = 99999999999999
-        for num in zs:
-            valid_number = int(num)
-            if max_valid < valid_number:
-                max_valid = valid_number
-            if min_valid > valid_number:
-                min_valid = valid_number
-
+        # in the end there is just one possible Z-value - 0 (the initial state of the Z register)
         return (
-            f'Maximum valid serial number: {max_valid}\n'
-            f'Minimum valid serial number: {min_valid}'
+            f'Maximum valid serial number: {max(z_values[0])}\n'
+            f'Minimum valid serial number: {min(z_values[0])}'
         )
 
 
-def get_next_zs(previous_zs: Dict[str, List[int]], params: List[int]) -> Dict[str, List[int]]:
-    zs = {}
-    for n in previous_zs:
-        for z in previous_zs[n]:
-            for w in range(1, 10):
-                key = str(w) + str(n)
-                new_zs = get_zs_for_input(params, w, z)
-                if len(new_zs) > 0:
-                    zs[key] = new_zs
+def get_next_z_values(previous_z_values: Dict[int, Set[str]], a: int, b: int) -> Dict[int, Set[str]]:
+    result = defaultdict(set)
+    for previous_z, previous_inputs in previous_z_values.items():
+        for previous_input in previous_inputs:
+            for current_input_digit in range(1, 10):
+                # try all input digits, collect possible Z-values for each digit and store in result
+                current_input = str(current_input_digit) + str(previous_input)
+                current_z_values = get_z_values_for_input(current_input_digit, previous_z, a, b)
+                if current_z_values is not None:
+                    for current_z in current_z_values:
+                        result[current_z].add(current_input)  # this Z-value is possible with this input too
 
-    return zs
+    # for each Z-value we only need max and min input, trim the rest
+    result_reduced = {}
+    for z in result:
+        result_reduced[z] = {min(result[z]), max(result[z])} if len(result[z]) > 2 else result[z]
+    return result_reduced
 
 
-def get_zs_for_input(params: List[int], w: int, z: int) -> List[int]:
-    c, a, b = params
-
+# gets the possible values of the "Z" register given the input digit for the current level and the Z-value in the previous level
+# these equations are painstakingly manually inferred from the ALU program structure and behaviour
+def get_z_values_for_input(input_digit: int, previous_z: int, a: int, b: int) -> Optional[List[int]]:
     if a > 0:
-        if (z - w - b) % 26 != 0:
-            return []
-        return [(z - w - b) // 26]
+        if (previous_z - input_digit - b) % 26 != 0:
+            return None
+        return [(previous_z - input_digit - b) // 26]
 
-    res = [z * 26 + w - a]
+    result = [previous_z * 26 + input_digit - a]
     for i in range(26):
-        new_z = z - w - b - i
-        if new_z < 0 or new_z == z - b - a:
+        possible_z = previous_z - input_digit - b - i
+        if possible_z < 0 or possible_z == previous_z - b - a:
             continue
-        if 26 * (new_z // 26) != z - w - b:
+        if 26 * (possible_z // 26) != previous_z - input_digit - b:
             continue
-        res.append(new_z)
-    return res
+        result.append(possible_z)
+
+    return result
 
 
 if __name__ == '__main__':

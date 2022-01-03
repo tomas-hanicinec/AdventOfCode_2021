@@ -1,3 +1,4 @@
+from itertools import product
 from typing import Tuple, Dict
 
 STARTING_POSITIONS = (4, 7)
@@ -35,9 +36,7 @@ def play_deterministic() -> Tuple[int, int]:
         dice_current = ((dice_current + 3) % DICE_SIDES_DETERMINISTIC)
         dice_counter += 3
         # move pieces
-        new_positions, new_scores = move(game_round, dice_result, positions, scores)
-        positions = new_positions
-        scores = new_scores
+        positions, scores = move(game_round, dice_result, positions, scores)
         game_round += 1
 
     return min(scores), dice_counter
@@ -48,11 +47,9 @@ def play_dirac() -> Tuple[int, int]:
 
     # there are 27 possible outcomes of 3 dice rolls, but we only care about their sum (which is way less)
     universe_counts: Dict[int, int] = {}
-    for i in range(DICE_SIDES_DIRAC):
-        for j in range(DICE_SIDES_DIRAC):
-            for k in range(DICE_SIDES_DIRAC):
-                s = i + j + k + 3  # i, j, k start from 0...
-                universe_counts[s] = universe_counts[s] + 1 if s in universe_counts else 1
+    for i, j, k in product(range(DICE_SIDES_DIRAC), repeat=3):
+        s = i + j + k + 3  # i, j, k start from 0...
+        universe_counts[s] = universe_counts[s] + 1 if s in universe_counts else 1
 
     return play_dirac_round(0, starting_positions, (0, 0), universe_counts, {})
 

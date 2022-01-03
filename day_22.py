@@ -1,4 +1,4 @@
-from typing import Tuple, NamedTuple, List, Optional
+from typing import Tuple, NamedTuple, List, Optional, Dict
 
 import utils
 
@@ -7,20 +7,15 @@ class Day22:
     steps: List['RebootStep']
 
     def __init__(self) -> None:
-        lines = utils.read_strings('inputs/day_22.txt')
-
         self.steps = []
-        for line in lines:
+        for line in utils.read_strings('inputs/day_22.txt'):
             on, cube = line.split(' ')
             self.steps.append(RebootStep(on == 'on', parse_dimensions(cube.split(','))))
 
     def run(self) -> str:
         core = ReactorCore()
         for step in self.steps:
-            if step.on:
-                core.add(step.cube)
-            else:
-                core.remove(step.cube)
+            core.add(step.cube) if step.on else core.remove(step.cube)
 
         return (
             f'{core.get_active_count(Cuboid((-50, 50), (-50, 50), (-50, 50)))} cubes turned on within the [-50..50] region\n'
@@ -40,34 +35,44 @@ class RebootStep(NamedTuple):
 
 
 class ReactorCore:
-    cubes: List[Tuple[int, Cuboid]]
+    cubes: Dict[Cuboid, int]
 
     def __init__(self) -> None:
-        self.cubes = []
+        self.cubes = {}
 
     def add(self, new_cube: Cuboid) -> None:
         # add the new cube and remove all the intersections with current cubes
-        new_cubes: List[Tuple[int, Cuboid]] = [(1, new_cube)]
-        for weight, cube in self.cubes:
+        new_cubes = {new_cube: 1}
+        for cube, weight in self.cubes.items():
             intersection = get_intersection(cube, new_cube)
             if intersection is not None:
                 # flip the weight so with "negative" cubes the intersection is added as "positive" and vice versa
-                new_cubes.append((-1 * weight, intersection))
-        self.cubes += new_cubes
+                new_cubes[intersection] = new_cubes.get(intersection, 0) - weight
+        self.add_new_cubes(new_cubes)
 
     def remove(self, remove_cube: Cuboid) -> None:
         # remove all the intersections with current cubes
-        new_cubes: List[Tuple[int, Cuboid]] = []
-        for weight, cube in self.cubes:
+        new_cubes: Dict[Cuboid, int] = {}
+        for cube, weight in self.cubes.items():
             intersection = get_intersection(cube, remove_cube)
             if intersection is not None:
                 # flip the weight so with "negative" cubes the intersection is added as "positive" and vice versa
-                new_cubes.append((-1 * weight, intersection))
-        self.cubes += new_cubes
+                new_cubes[intersection] = new_cubes.get(intersection, 0) - weight
+        self.add_new_cubes(new_cubes)
+
+    def add_new_cubes(self, new: Dict[Cuboid, int]) -> None:
+        for cube, weight in new.items():
+            if weight == 0:
+                continue
+            current = self.cubes.get(cube, 0)
+            if current + weight == 0:
+                del self.cubes[cube]
+            else:
+                self.cubes[cube] = current + weight
 
     def get_active_count(self, limit: Optional[Cuboid]) -> int:
         result = 0
-        for weight, cube in self.cubes:
+        for cube, weight in self.cubes.items():
             if limit is not None:
                 intersection = get_intersection(cube, limit)
                 if intersection is None:
@@ -80,8 +85,9 @@ class ReactorCore:
 
 
 def get_intersection(a: Cuboid, b: Cuboid) -> Optional[Cuboid]:
-    x_min = max(a.x[0], b.x[0])
-    x_max = min(a.x[1], b.x[1])
+    # if-else is slightly faster here than max, min
+    x_min = a.x[0] if a.x[0] > b.x[0] else b.x[0]
+    x_max = a.x[1] if a.x[1] < b.x[1] else b.x[1]
     if x_max < x_min:
         return None
 

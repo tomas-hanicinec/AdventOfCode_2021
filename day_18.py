@@ -1,4 +1,3 @@
-from copy import deepcopy
 from math import floor, ceil
 from typing import Tuple, Optional, List
 
@@ -13,19 +12,16 @@ class Day18:
         self.numbers = [Pair.create_from_string(line) for line in lines]
 
     def run(self) -> str:
-        total_sum = deepcopy(self.numbers[0])
+        total_sum = self.numbers[0]
         for number in self.numbers[1:]:
-            number = deepcopy(number)
             total_sum = total_sum + number
 
         max_mag = 0
         for i in range(len(self.numbers)):
             for j in range(len(self.numbers)):
                 if i != j:
-                    res = deepcopy(self.numbers[i]) + deepcopy(self.numbers[j])
-                    res_mag = res.get_magnitude()
-                    if res_mag > max_mag:
-                        max_mag = res_mag
+                    mag = (self.numbers[i] + self.numbers[j]).get_magnitude()
+                    max_mag = max(mag, max_mag)
         return (
             f'Magnitude of the total sum: {total_sum.get_magnitude()}\n'
             f'Maximum magnitude from adding two numbers: {max_mag}'
@@ -34,7 +30,7 @@ class Day18:
 
 class SnailfishNumber:
 
-    def to_string(self) -> str:
+    def __str__(self) -> str:
         pass
 
     def get_magnitude(self) -> int:
@@ -55,25 +51,26 @@ class SnailfishNumber:
     def get_number(self) -> int:
         pass
 
+    def copy(self) -> 'SnailfishNumber':
+        pass
+
 
 class Pair(SnailfishNumber):
     pair: Tuple[SnailfishNumber, SnailfishNumber]
 
     def __init__(self, left: SnailfishNumber, right: SnailfishNumber):
         self.pair = (left, right)
-        super().__init__()
 
     @staticmethod
     def create_from_string(string: str) -> 'Pair':
         number, end = number_from_string(string, 0)
         return number
 
-    def to_string(self) -> str:
-        return '[' + self.pair[0].to_string() + ',' + self.pair[1].to_string() + ']'
+    def __str__(self) -> str:
+        return '[' + str(self.pair[0]) + ',' + str(self.pair[1]) + ']'
 
     def __add__(self, other: 'Pair') -> 'Pair':
-        result = Pair(self, other)  # add the numbers
-        # reduce the result
+        result = Pair(self, other).copy()
         number_reduced = False
         while not number_reduced:
             _, _, exploded = result.explode(0)
@@ -135,15 +132,17 @@ class Pair(SnailfishNumber):
     def get_pair(self) -> Tuple[int, int]:
         return self.pair[0].get_number(), self.pair[1].get_number()
 
+    def copy(self) -> 'Pair':
+        return Pair(self.pair[0].copy(), self.pair[1].copy())
+
 
 class Regular(SnailfishNumber):
     number: int
 
     def __init__(self, number: int):
         self.number = number
-        super().__init__()
 
-    def to_string(self) -> str:
+    def __str__(self) -> str:
         return str(self.number)
 
     def get_magnitude(self) -> int:
@@ -159,6 +158,9 @@ class Regular(SnailfishNumber):
 
     def get_number(self) -> int:
         return self.number
+
+    def copy(self) -> 'Regular':
+        return Regular(self.number)
 
 
 def number_from_string(string: str, number_start: int) -> Tuple[Pair, int]:
